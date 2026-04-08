@@ -50,6 +50,17 @@ subprojects {
             }
         }
     }
+
+    configurations.configureEach {
+        resolutionStrategy.dependencySubstitution {
+            substitute(module("com.google.code.gson:gson:2.8.8"))
+                .using(module("com.google.code.gson:gson:2.8.9"))
+                .because("gson 2.8.8 jar is missing from the bootstrap maven repo; 2.8.9 is API-compatible and is the version already used by spigot-api 1.18.2.")
+            substitute(module("com.google.code.gson:gson:2.10"))
+                .using(module("com.google.code.gson:gson:2.10.1"))
+                .because("gson 2.10 jar is missing from the bootstrap maven repo; 2.10.1 is API-compatible and is the version already used by spigot-api 1.20.4.")
+        }
+    }
 }
 
 tasks.register<Delete>("clean") {
