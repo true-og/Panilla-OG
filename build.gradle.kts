@@ -59,6 +59,11 @@ subprojects {
             substitute(module("com.google.code.gson:gson:2.10"))
                 .using(module("com.google.code.gson:gson:2.10.1"))
                 .because("gson 2.10 jar is missing from the bootstrap maven repo; 2.10.1 is API-compatible and is the version already used by spigot-api 1.20.4.")
+            if (hasBootstrapRepo) {
+                substitute(module("org.spigotmc:spigot:1.18.2-R0.1-SNAPSHOT"))
+                    .using(module("org.bukkit:craftbukkit:1.18.2-R0.1-SNAPSHOT"))
+                    .because("spigot 1.18.2 jar is missing from the bootstrap maven repo; the mirrored CraftBukkit 1.18.2 artifact exposes the same v1_18_R2 server internals needed to compile this module.")
+            }
         }
     }
 }
