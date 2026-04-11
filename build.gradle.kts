@@ -66,6 +66,9 @@ subprojects {
                 substitute(module("org.spigotmc:spigot:1.19.3-R0.1-SNAPSHOT"))
                     .using(module("org.bukkit:craftbukkit:1.19.3-R0.1-SNAPSHOT"))
                     .because("spigot 1.19.3 jar is missing from the bootstrap maven repo; the mirrored CraftBukkit 1.19.3 artifact exposes the same v1_19_R2 server internals needed to compile this module.")
+                substitute(module("org.spigotmc:spigot:1.19.4-R0.1-SNAPSHOT"))
+                    .using(module("org.bukkit:craftbukkit:1.19.4-R0.1-SNAPSHOT"))
+                    .because("spigot 1.19.4 jar is missing from the bootstrap maven repo; the mirrored CraftBukkit 1.19.4 artifact exposes the same v1_19_R3 server internals needed to compile this module.")
             }
         }
     }
