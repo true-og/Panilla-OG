@@ -10,43 +10,60 @@
 language: en
 
 # Logging options
+# Leave console: true for the first 1-2 weeks after deploy so false-positive
+# blocks (ViaPotions custom potion color, plugin PDC bursts, etc.) are visible.
+# Flip back to false once the log is quiet.
 logging:
-  console: false
+  console: true
   chat: false
 
 # Strictness of how much you wish to enforce
 #   lenient - Only prevent game-breaking things or crashes
 #   average - Prevent most abusive things (recommended)
 #   strict  - Prevent anything non-vanilla
+#
+# Stay on average for this stack. strict gates CanPlaceOn / CanDestroy /
+# BlockStateTag / HasVisualFire — low marginal coverage but breaks any
+# BattleArena/Duels kits, GameModeInventories creative items, or future
+# adventure-mode minigames that rely on those vanilla tags.
 strictness: average
 
 # This prevents users from creating high resolution skulls with
 # a Minecraft Education account (or possibly other methods)
 #
 # See this paste for more information: https://paste.ubuntu.com/p/SSGg6szMc4/
-prevent-minecraft-education-skulls: false
+#
+# Safe to enable: MobHeads-OG uses Mojang skin URLs (SkullOwner.Properties.textures),
+# which is unaffected by this check. The check only blocks oversized embedded skin data.
+prevent-minecraft-education-skulls: true
 
 # This prevents FAWE brush NBT on items. It stops users from giving
 # out FAWE brush items which may trick others into accidentally WorldEdit'ing
-prevent-fawe-brush-nbt: false
+prevent-fawe-brush-nbt: true
 
 # When checking packets, by default, Panilla-OG will check any inventory (player, chest, etc...)
 # Setting this to true will make Panilla-OG only check player inventories
 
 # This can help with ensuring custom GUI's in plugins don't get flagged
 # This may also marginally improve performance
-ignore-non-player-inventories: false
+#
+# Required true for this stack: GxUI-OG, QuickShop-OG, Cosmetics-OG, BuildBattle-OG,
+# Quests-OG, Duels-OG, BattleArena, GameModeInventories-OG, OpenInv, Spleef/Splegg-OG,
+# and ArenaRegen-OG all open non-player containers with custom-NBT items.
+# Exploit items will still get caught when picked up into the player inventory.
+ignore-non-player-inventories: true
 
 # When true, this will prevent any BlockEntityTag NBT regardless of strictness
-# This will break things like ShulkerBoxes
-# Generally not recommended
+# MUST stay false — ShulkerStacking-OG relies on BlockEntityTag.
 no-block-entity-tag: false
 
 # Whitelist NBT tags from being checked
 # Keep in mind some NBT tags vary between Minecraft versions
 #     (eg: ench on 1.12 vs Enchantments on 1.13)
+# Tip: Add CustomPotionColor here if ViaPotions-OG starts tripping it for legacy clients.
 nbt-whitelist:
 #  - Enchantments
+#  - CustomPotionColor
 
 # Prevent Panilla-OG from checking NBT in certain worlds
 # Effectively sets the world to the lenient strictness (to prevent crash exploits)
@@ -59,6 +76,8 @@ disabled-worlds:
 # Useful if you want to manually set a max enchantment level for specific enchantments
 # You must use either normal or strict mode for this to work
 # Find a list of Minecraft enchantment names here: https://www.digminecraft.com/lists/enchantment_list_pc.php
+#
+# OldEnchant-OG uses vanilla level caps, so no override needed with it.
 max-enchantment-levels:
   override-minecraft-max-enchantment-levels: false
   overrides:
@@ -73,4 +92,12 @@ max-enchantment-levels:
 # custom NBT keys, then you can raise it as high as you like.
 #
 # Generally, you should never have to touch this.
-max-non-minecraft-nbt-keys: 16
+#
+# Bumped 16 -> 32 for Item-NBT-API + PDC-heavy stack (DiamondBank-OG, MobHeads-OG,
+# Cosmetics-OG, HolyGrail-OG, Quests-OG, PetMaster-OG, PetTeleport-OG, Essentials-OG,
+# BetterPickup-OG, FirstPlayed-OG, MCShared-OG, PlayerBounties-OG, PlayTimes-OG,
+# Unions-OG). The threshold descends recursively into compound tags, so stacked
+# PDC keys on one item can pile up. 32 still blocks crash exploits (those use
+# thousands of keys). Raise to 48 if a Quests + Cosmetics combo trips it; don't
+# lower below 32.
+max-non-minecraft-nbt-keys: 32
