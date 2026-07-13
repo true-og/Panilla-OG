@@ -24,7 +24,7 @@ logging:
 #
 # Stay on average for this stack. strict gates CanPlaceOn / CanDestroy /
 # BlockStateTag / HasVisualFire — low marginal coverage but breaks any
-# BattleArena/Duels kits, GameModeInventories creative items, or future
+# Duels-OG/Spleef-OG kits, GameModeInventories-OG creative items, or future
 # adventure-mode minigames that rely on those vanilla tags.
 strictness: average
 
@@ -48,8 +48,8 @@ prevent-fawe-brush-nbt: true
 # This may also marginally improve performance
 #
 # Required true for this stack: GxUI-OG, QuickShop-OG, Cosmetics-OG, BuildBattle-OG,
-# Quests-OG, Duels-OG, BattleArena, GameModeInventories-OG, OpenInv, Spleef/Splegg-OG,
-# and ArenaRegen-OG all open non-player containers with custom-NBT items.
+# Quests-OG, Duels-OG, GameModeInventories-OG, OpenInv, Spleef-OG. Splegg-OG,
+# and ArenaRegen-OG which all open non-player containers with custom-NBT items.
 # Exploit items will still get caught when picked up into the player inventory.
 ignore-non-player-inventories: true
 
