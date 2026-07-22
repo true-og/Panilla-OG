@@ -13,6 +13,7 @@ import java.util.Map;
 public final class NbtChecks {
 
     private static final Map<String, NbtCheck> checks = new HashMap<>();
+    private static final int MAX_HIDE_FLAGS = 0x7F;
 
     static {
         // vanilla
@@ -74,7 +75,7 @@ public final class NbtChecks {
 
     public static void checkPacketPlayOut(int slot, INbtTagCompound tag, String nmsItemClassName, String nmsPacketClassName,
                                           IPanilla panilla) throws NbtNotPermittedException {
-        FailedNbt failedNbt = checkAll(tag, nmsItemClassName, panilla);
+        FailedNbt failedNbt = checkAll(tag, nmsItemClassName, panilla, true);
 
         if (FailedNbt.fails(failedNbt)) {
             throw new NbtNotPermittedException(nmsPacketClassName, false, failedNbt, slot);
@@ -102,12 +103,21 @@ public final class NbtChecks {
     }
 
     public static FailedNbt checkAll(INbtTagCompound tag, String nmsItemClassName, IPanilla panilla) {
+        return checkAll(tag, nmsItemClassName, panilla, false);
+    }
+
+    private static FailedNbt checkAll(INbtTagCompound tag, String nmsItemClassName, IPanilla panilla,
+                                      boolean serverGeneratedItem) {
         if (!tagMeetsKeyThreshold(tag, panilla)) {
             return FailedNbt.FAIL_KEY_THRESHOLD;
         }
 
         for (String key : tag.getKeys()) {
             if (panilla.getPConfig().nbtWhitelist.contains(key)) {
+                continue;
+            }
+
+            if (serverGeneratedItem && isSafeServerGeneratedMetadata(tag, key)) {
                 continue;
             }
 
@@ -138,6 +148,18 @@ public final class NbtChecks {
         }
 
         return FailedNbt.NO_FAIL;
+    }
+
+    private static boolean isSafeServerGeneratedMetadata(INbtTagCompound tag, String key) {
+        if ("Unbreakable".equals(key)) {
+            return tag.hasKeyOfType(key, NbtDataType.BYTE) && tag.getInt(key) >= 0 && tag.getInt(key) <= 1;
+        }
+
+        if ("HideFlags".equals(key)) {
+            return tag.hasKeyOfType(key, NbtDataType.INT) && tag.getInt(key) >= 0 && tag.getInt(key) <= MAX_HIDE_FLAGS;
+        }
+
+        return false;
     }
 
 }
